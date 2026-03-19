@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import bs58 from 'bs58';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { Market, BinaryMarket, MultipleMarket } from '@/lib/types';
@@ -15,7 +16,7 @@ export default function TradingPanel({
   market: Market;
   onConfirm: () => void;
 }) {
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connected, signMessage } = useWallet();
   const { setVisible } = useWalletModal();
   const { user, signIn } = useApp();
 
@@ -47,12 +48,21 @@ export default function TradingPanel({
     setLoading(true);
     setError('');
     try {
+      // Require Phantom signature to confirm the bet
+      if (!signMessage) throw new Error('Wallet does not support message signing');
+      const msgBytes = new TextEncoder().encode(
+        `Confirm bet: ${num} SOL on ${selected} — market ${market.id} — ${Date.now()}`
+      );
+      const sigBytes = await signMessage(msgBytes);
+      const txSignature = bs58.encode(sigBytes);
+
       const res = await fetch(`/api/markets/${market.id}/positions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           optionLabel: market.type === 'binary' ? selected.toUpperCase() : selected,
           amountUsd: num,
+          txSignature,
         }),
       });
       if (!res.ok) {

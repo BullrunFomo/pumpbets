@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import bs58 from 'bs58';
 import { X } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
@@ -15,7 +16,7 @@ interface BetModalProps {
 }
 
 export default function BetModal({ market, option, onClose, onConfirm }: BetModalProps) {
-  const { connected } = useWallet();
+  const { connected, signMessage } = useWallet();
   const { setVisible } = useWalletModal();
   const { user, signIn } = useApp();
 
@@ -52,10 +53,17 @@ export default function BetModal({ market, option, onClose, onConfirm }: BetModa
     setLoading(true);
     setError('');
     try {
+      if (!signMessage) throw new Error('Wallet does not support message signing');
+      const msgBytes = new TextEncoder().encode(
+        `Confirm bet: ${num} SOL on ${option} — market ${market.id} — ${Date.now()}`
+      );
+      const sigBytes = await signMessage(msgBytes);
+      const txSignature = bs58.encode(sigBytes);
+
       const res = await fetch(`/api/markets/${market.id}/positions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ optionLabel: option.toUpperCase(), amountUsd: num }),
+        body: JSON.stringify({ optionLabel: option.toUpperCase(), amountUsd: num, txSignature }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
