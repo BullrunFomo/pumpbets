@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    // Upsert user record
-    await upsertUser(wallet);
+    // Upsert user record (non-fatal — session still works if this fails)
+    try { await upsertUser(wallet); } catch (e) { console.warn('[auth/wallet] upsertUser failed:', e); }
 
     // Issue session cookie
     const token = await createSession(wallet);

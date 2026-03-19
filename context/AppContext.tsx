@@ -59,9 +59,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ wallet, signature, message }),
     });
     const data = await res.json();
-    if (data.ok) {
-      setUser({ walletAddress: wallet, username: null, avatarColor: '#01e29e' });
-    }
+    if (!res.ok) throw new Error(data.error ?? `Sign-in failed (${res.status})`);
+    setUser({ walletAddress: wallet, username: null, avatarColor: '#01e29e' });
   }, [publicKey, signMessage]);
 
   // Auto sign-in when wallet connects or switches to a different wallet

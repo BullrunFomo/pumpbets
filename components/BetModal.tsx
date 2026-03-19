@@ -41,7 +41,10 @@ export default function BetModal({ market, option, onClose, onConfirm }: BetModa
 
   const handleConfirm = async () => {
     if (!connected) { setVisible(true); return; }
-    if (!user) { await signIn(); return; }
+    if (!user) {
+      try { await signIn(); } catch (e) { setError(e instanceof Error ? e.message : 'Sign-in failed'); }
+      return;
+    }
 
     const num = parseFloat(amount);
     if (!num || num <= 0) { setError('Enter a valid amount'); return; }
