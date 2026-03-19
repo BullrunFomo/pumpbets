@@ -1,26 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { Market, BinaryMarket, MultipleMarket } from '@/lib/types';
 import { C, OPTION_COLORS } from '@/lib/theme';
-import { buildPlaceBet, fetchMarket } from '@/lib/solana/client';
+import { useApp } from '@/context/AppContext';
 
-function toChainId(marketId: string): bigint {
-  const n = parseInt(marketId, 10);
-  if (!isNaN(n)) return BigInt(n);
-  const match = marketId.match(/\d+/);
-  return match ? BigInt(match[0]) : BigInt(0);
-}
-
-function optionIndex(market: Market, option: string): number {
-  if (market.type === 'binary') return option.toUpperCase() === 'YES' ? 0 : 1;
-  const idx = (market as MultipleMarket).options.findIndex(
-    (o) => o.label.toLowerCase() === option.toLowerCase()
-  );
-  return Math.max(0, idx);
-}
 
 export default function TradingPanel({
   market,
@@ -29,9 +15,9 @@ export default function TradingPanel({
   market: Market;
   onConfirm: () => void;
 }) {
-  const { connection } = useConnection();
-  const { publicKey, sendTransaction, connected } = useWallet();
+  const { publicKey, connected } = useWallet();
   const { setVisible } = useWalletModal();
+  const { user, signIn } = useApp();
 
   const isBinary = market.type === 'binary';
   const bMarket  = isBinary ? (market as BinaryMarket) : null;
@@ -51,44 +37,24 @@ export default function TradingPanel({
 
   const handleConfirm = async () => {
     if (!connected || !publicKey) { setVisible(true); return; }
+    if (!user) { await signIn(); return; }
     const num = parseFloat(amount);
     if (!num || num <= 0) { setError('Enter a valid amount'); return; }
 
     setLoading(true);
     setError('');
     try {
-      const chainMarketId = toChainId(market.id);
-      const onChain = await fetchMarket(connection, chainMarketId);
-      if (!onChain) throw new Error('Market not yet initialized on-chain.');
-      if (onChain.resolved) throw new Error('This market has already been resolved.');
-      if (Date.now() / 1000 > onChain.expiry) throw new Error('This market has expired.');
-
-      const optIdx = optionIndex(market, selected);
-      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-      const tx = await buildPlaceBet(connection, publicKey, chainMarketId, optIdx, num);
-      tx.recentBlockhash = blockhash;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sim = await (connection.simulateTransaction as any)(tx);
-      if (sim.value.err) {
-        const anchor = sim.value.logs?.find((l: string) => l.includes('Error Message:'));
-        const msg = anchor
-          ? anchor.replace(/.*Error Message:\s*/, '')
-          : (sim.value.logs?.find((l: string) => l.startsWith('Program log:'))?.replace('Program log: ', '') ?? 'Transaction would fail on-chain');
-        throw new Error(msg);
-      }
-
-      const sig = await sendTransaction(tx, connection);
-      await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, 'confirmed');
-
       const res = await fetch(`/api/markets/${market.id}/positions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ optionLabel: market.type === 'binary' ? selected.toUpperCase() : selected, amountUsd: num, txSignature: sig }),
+        body: JSON.stringify({
+          optionLabel: market.type === 'binary' ? selected.toUpperCase() : selected,
+          amountUsd: num,
+        }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? 'Bet recorded on-chain but failed to save to DB');
+        throw new Error(body.error ?? 'Failed to place bet');
       }
 
       setSubmitted(true);
