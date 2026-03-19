@@ -6,7 +6,8 @@ export default async function Home() {
   let markets = STATIC_MARKETS;
   let totalVolume: number | null = null;
   try {
-    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_URL !== 'your_supabase_project_url') {
+    const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (supabaseUrl && supabaseUrl !== 'your_supabase_project_url') {
       const [dbMarkets, vol] = await Promise.all([getAllMarkets(), getTotalVolume()]);
       if (dbMarkets.length > 0) markets = dbMarkets;
       totalVolume = vol;
