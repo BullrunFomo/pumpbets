@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import Navbar from '@/components/Navbar';
 import MarketCard from '@/components/MarketCard';
@@ -113,20 +114,29 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
       {/* Footer */}
       <div style={{ flexShrink: 0, borderTop: '1px solid #1a1a1a', padding: isMobile ? '16px 20px' : '10px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 6 : 10 }}>
         {([
-          { label: 'Terms of service', href: '/terms' },
-          { label: 'Tokenomics',       href: '/tokenomics' },
-          { label: 'X',                href: 'https://x.com/pumpbetsio' },
-          { label: 'Docs',             href: '/docs' },
-        ] as const).map(({ label, href }, i, arr) => (
+          { label: 'Terms of service', href: '/terms',                    external: false },
+          { label: 'Tokenomics',       href: '/tokenomics',               external: false },
+          { label: 'X',                href: 'https://x.com/pumpbetsio',  external: true  },
+          { label: 'Docs',             href: '/docs',                     external: false },
+        ] as const).map(({ label, href, external }, i, arr) => (
           <React.Fragment key={label}>
-            <a
-              href={href}
-              style={{ fontSize: 12, color: '#444', textDecoration: 'none', transition: 'color 0.15s', padding: isMobile ? '6px 4px' : '0' }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#888')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = '#444')}
-            >
-              {label}
-            </a>
+            {external ? (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 12, color: '#444', textDecoration: 'none', padding: isMobile ? '10px 8px' : '4px 2px' }}
+              >
+                {label}
+              </a>
+            ) : (
+              <Link
+                href={href}
+                style={{ fontSize: 12, color: '#444', textDecoration: 'none', padding: isMobile ? '10px 8px' : '4px 2px' }}
+              >
+                {label}
+              </Link>
+            )}
             {i < arr.length - 1 && <span style={{ color: '#2a2a2a', fontSize: 12 }}>|</span>}
           </React.Fragment>
         ))}
