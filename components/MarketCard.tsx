@@ -67,15 +67,15 @@ export default function MarketCard({
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           {mMarket!.options.map((opt) => (
-            <div key={opt.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 13, color: '#ccc', flex: 1 }}>{opt.label}</span>
+            <div key={opt.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 0' }}>
+              <span style={{ fontSize: 14, color: '#ccc', flex: 1 }}>{opt.label}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: C.text, minWidth: 32, textAlign: 'right' }}>{opt.percent}%</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: C.text, minWidth: 32, textAlign: 'right' }}>{opt.percent}%</span>
                 <button
                   onClick={(e) => { e.stopPropagation(); onBet(market.id, opt.label); }}
-                  style={{ background: C.accent, color: C.bg, fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 4, border: 'none', cursor: 'pointer' }}
+                  style={{ background: C.accent, color: C.bg, fontSize: 12, fontWeight: 600, padding: '5px 12px', borderRadius: 4, border: 'none', cursor: 'pointer' }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = C.accentHover)}
                   onMouseLeave={(e) => (e.currentTarget.style.background = C.accent)}
                 >
@@ -90,8 +90,8 @@ export default function MarketCard({
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: C.accent, display: 'inline-block' }} />
-          <span style={{ fontSize: 11, color: C.muted, fontWeight: 500 }}>{market.totalBet} BET</span>
+          <span style={{ fontSize: 11, color: C.muted, fontWeight: 500 }}>Vol: {market.totalBet}</span>
+          <img src="/sol.svg" alt="SOL" style={{ width: 11, height: 11 }} />
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <MessageCircle size={11} color={C.muted} />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import Navbar from '@/components/Navbar';
 import MarketCard from '@/components/MarketCard';
@@ -18,6 +18,14 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
   const [sort, setSort]         = useState<SortOption>('Trending');
   const [search, setSearch]     = useState('');
   const [betModal, setBetModal] = useState<{ market: Market; option: string } | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const walletConnected = !!user;
   const walletAddress   = user?.walletAddress ?? null;
@@ -46,33 +54,43 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
   const totalVolume = markets.reduce((s, m) => s + m.volume, 0);
 
   return (
-    <div style={{ height: '100vh', overflow: 'hidden', background: '#080808', display: 'flex', flexDirection: 'column' }}>
+    <div style={{
+      minHeight: '100vh',
+      height: isMobile ? 'auto' : '100vh',
+      overflow: isMobile ? 'auto' : 'hidden',
+      background: '#080808',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
       <Navbar
         onSearch={setSearch}
         walletConnected={walletConnected}
         walletAddress={walletAddress}
         onConnectWallet={() => setVisible(true)}
+        isMobile={isMobile}
       />
 
       {/* Stats bar */}
-      <div style={{ background: '#0d0d0d', borderBottom: '1px solid #1a1a1a', padding: '6px 20px', flexShrink: 0, display: 'flex', gap: 24, alignItems: 'center' }}>
+      <div style={{ background: '#0d0d0d', borderBottom: '1px solid #1a1a1a', padding: isMobile ? '6px 14px' : '6px 20px', flexShrink: 0, display: 'flex', gap: isMobile ? 10 : 24, alignItems: 'center' }}>
         <Stat label="Markets" value={String(markets.length)} />
         <Divider />
-        <Stat label="Volume" value={`$${(totalVolume / 1_000_000).toFixed(2)}M`} />
-        <Divider />
-        <Stat label="Network" value="Solana Devnet" highlight />
-        <Divider />
-        <Stat label="Wallet" value={walletConnected ? '● Connected' : '○ Disconnected'} highlight={walletConnected} />
+        <Stat label="Volume" value={`${(totalVolume / 1_000_000).toFixed(2)}M SOL`} />
+        {!isMobile && <>
+          <Divider />
+          <Stat label="Network" value="Solana Devnet" highlight />
+          <Divider />
+          <Stat label="Wallet" value={walletConnected ? '● Connected' : '○ Disconnected'} highlight={walletConnected} />
+        </>}
       </div>
 
       {/* Category & Sort bar */}
-      <div style={{ background: '#080808', borderBottom: '1px solid #1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', flexShrink: 0 }}>
+      <div style={{ background: '#080808', borderBottom: '1px solid #1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: isMobile ? '0 10px' : '0 20px', flexShrink: 0 }}>
         <CategoryTabs active={category} onChange={setCategory} />
         <SortTabs active={sort} onChange={setSort} />
       </div>
 
       {/* Market grid */}
-      <div style={{ flex: 1, padding: '14px 120px', overflow: 'hidden', minHeight: 0 }}>
+      <div style={{ flex: isMobile ? 'none' : 1, padding: isMobile ? '12px' : '14px 120px', overflow: isMobile ? 'visible' : 'hidden', minHeight: 0 }}>
         {filteredMarkets.length === 0 ? (
           <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#555' }}>
             <p style={{ fontSize: 36, margin: 0 }}>🔍</p>
@@ -80,7 +98,13 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
             <p style={{ fontSize: 13, color: '#444' }}>Try a different search or category</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(2, 1fr)', gap: 14, height: 'calc(100% - 14px)' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gridTemplateRows: isMobile ? 'auto' : 'repeat(2, 1fr)',
+            gap: isMobile ? 12 : 14,
+            height: isMobile ? 'auto' : 'calc(100% - 14px)',
+          }}>
             {filteredMarkets.map((market) => (
               <MarketCard key={market.id} market={market} onBet={handleBet} />
             ))}

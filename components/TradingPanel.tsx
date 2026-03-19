@@ -200,7 +200,7 @@ export default function TradingPanel({
               })}
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 18 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
               {mMarket!.options.map((opt, i) => {
                 const color      = OPTION_COLORS[i % 4];
                 const isSelected = selected === opt.label;
@@ -209,7 +209,7 @@ export default function TradingPanel({
                     key={opt.label}
                     onClick={() => setSelected(opt.label)}
                     style={{
-                      padding: '9px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                      padding: '15px 18px', borderRadius: 10, fontSize: 15, fontWeight: 600,
                       border: `1px solid ${isSelected ? color : '#222'}`,
                       cursor: 'pointer', textAlign: 'left',
                       background: isSelected ? color + '20' : '#1a1a1a',
@@ -219,7 +219,7 @@ export default function TradingPanel({
                     }}
                   >
                     <span>{opt.label}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700 }}>{opt.percent}%</span>
+                    <span style={{ fontSize: 14, fontWeight: 700 }}>{opt.percent}%</span>
                   </button>
                 );
               })}

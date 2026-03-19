@@ -187,6 +187,38 @@ html, body {
   box-shadow: 0 8px 32px rgba(0, 110, 70, 0.15);
 }
 
+/* ── Mobile responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Allow full-page scroll on mobile */
+  .page-root {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+  }
+
+  .navbar-inner { padding: 0 16px !important; }
+  .navbar-search { display: none !important; }
+  .navbar-nav-links { display: none !important; }
+  .navbar-create { display: none !important; }
+
+  .stats-bar { padding: 6px 14px !important; gap: 10px !important; overflow-x: auto; }
+  .stats-hide-mobile { display: none !important; }
+
+  .category-sort-bar { padding: 0 10px !important; }
+
+  .market-grid-wrap {
+    padding: 12px 12px !important;
+    overflow: visible !important;
+    flex: none !important;
+  }
+  .market-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    height: auto !important;
+    gap: 12px !important;
+  }
+}
+
 /* Wallet adapter modal: always show all wallets, hide "more options" */
 .wallet-adapter-modal-list-more {
   display: none !important;

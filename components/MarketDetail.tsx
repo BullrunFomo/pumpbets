@@ -18,7 +18,7 @@ function positionsToActivity(positions: Position[]) {
     action:  'bought',
     outcome: p.optionLabel,
     isYes:   p.optionLabel === 'YES',
-    amount:  `$${p.amountUsd.toFixed(2)}`,
+    amount:  `${p.amountUsd.toFixed(2)} SOL`,
     date:    new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
              ' · ' + new Date(p.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
   }));
@@ -35,7 +35,7 @@ function positionsToHolders(positions: Position[]) {
         return acc;
       }, {}
     )
-  ).sort((a, b) => b.value - a.value).slice(0, 10).map((h) => ({ ...h, value: `$${h.value.toFixed(0)}` }));
+  ).sort((a, b) => b.value - a.value).slice(0, 10).map((h) => ({ ...h, value: `${h.value.toFixed(2)} SOL` }));
 }
 
 export default function MarketDetail({
@@ -49,6 +49,7 @@ export default function MarketDetail({
 }) {
   const [chartKey, setChartKey] = useState(0);
   const [positions, setPositions] = useState<Position[]>(initialPositions);
+  const [liveComments, setLiveComments] = useState<DbComment[]>(dbComments);
 
   const isBinary = market.type === 'binary';
   const bMarket  = isBinary ? (market as BinaryMarket) : null;
@@ -61,6 +62,13 @@ export default function MarketDetail({
       .catch(() => {});
   }, [market.id]);
 
+  const fetchComments = useCallback(() => {
+    fetch(`/api/markets/${market.id}/comments`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (Array.isArray(data)) setLiveComments(data); })
+      .catch(() => {});
+  }, [market.id]);
+
   // Poll for live activity/holders updates every 30s
   useEffect(() => {
     const interval = setInterval(fetchPositions, 30_000);
@@ -70,15 +78,13 @@ export default function MarketDetail({
   const activity = positionsToActivity(positions);
   const holders  = positionsToHolders(positions);
 
-  const comments = dbComments.length > 0
-    ? dbComments.map((c) => ({
-        user:  c.username ?? c.userWallet.slice(0, 8) + '…',
-        text:  c.body,
-        likes: c.likes,
-        date:  new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-               ' · ' + new Date(c.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      }))
-    : [];
+  const comments = liveComments.map((c) => ({
+    user:  c.username ?? c.userWallet.slice(0, 8) + '…',
+    text:  c.body,
+    likes: c.likes,
+    date:  new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
+           ' · ' + new Date(c.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+  }));
 
   const onBetConfirm = () => {
     setChartKey((k) => k + 1);
@@ -117,7 +123,7 @@ export default function MarketDetail({
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 13, color: C.muted }}><span style={{ color: C.text, fontWeight: 600 }}>{market.totalBet}</span> Vol.</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: C.muted }}>Vol: <span style={{ color: C.text, fontWeight: 600 }}>{market.totalBet}</span><img src="/sol.svg" alt="SOL" style={{ width: 13, height: 13 }} /></span>
               <span style={{ color: '#333', fontSize: 12 }}>·</span>
               <span style={{ fontSize: 13, color: C.muted }}>Closes <span style={{ color: C.text }}>{new Date(market.expiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span></span>
               <span style={{ color: '#333', fontSize: 12 }}>·</span>
@@ -140,7 +146,7 @@ export default function MarketDetail({
           </div>
 
           <ChartSection market={market} refreshKey={chartKey} />
-          <ActivityTabs activity={activity} holders={holders} comments={comments} />
+          <ActivityTabs activity={activity} holders={holders} comments={comments} marketId={market.id} onCommentPosted={fetchComments} />
         </div>
 
         {/* Right column */}

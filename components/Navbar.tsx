@@ -10,9 +10,10 @@ interface NavbarProps {
   walletConnected: boolean;
   walletAddress: string | null;
   onConnectWallet: () => void;
+  isMobile?: boolean;
 }
 
-export default function Navbar({ onSearch, walletConnected, walletAddress, onConnectWallet }: NavbarProps) {
+export default function Navbar({ onSearch, walletConnected, walletAddress, onConnectWallet, isMobile }: NavbarProps) {
   const [searchValue, setSearchValue] = useState('');
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +39,7 @@ export default function Navbar({ onSearch, walletConnected, walletAddress, onCon
 
   return (
     <nav style={{ background: '#111111', borderBottom: '1px solid #1e1e1e', position: 'sticky', top: 0, zIndex: 50 }}>
-      <div style={{ padding: '0 40px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="navbar-inner" style={{ padding: '0 40px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Left: Logo + Search */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
@@ -48,7 +49,7 @@ export default function Navbar({ onSearch, walletConnected, walletAddress, onCon
             </span>
           </Link>
 
-          <div style={{ width: 300, position: 'relative' }}>
+          <div style={{ width: 300, position: 'relative', display: isMobile ? 'none' : 'block' }}>
             <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#666' }} />
             <input
               type="text"
@@ -64,13 +65,15 @@ export default function Navbar({ onSearch, walletConnected, walletAddress, onCon
 
         {/* Right side */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-          {navLink('/leaderboard', <Trophy size={15} />, 'Leaderboard')}
-          {walletConnected && navLink('/portfolio', <BarChart2 size={15} />, 'Portfolio')}
+          <div style={{ display: isMobile ? 'none' : 'flex', alignItems: 'center', gap: 10 }}>
+            {navLink('/leaderboard', <Trophy size={15} />, 'Leaderboard')}
+            {walletConnected && navLink('/portfolio', <BarChart2 size={15} />, 'Portfolio')}
+          </div>
 
           {/* Create */}
           <Link
             href="/market/create"
-            style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#e5e5e5', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none', transition: 'border-color 0.15s' }}
+            style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#e5e5e5', cursor: 'pointer', display: isMobile ? 'none' : 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none', transition: 'border-color 0.15s' }}
             onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#01e29e')}
             onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#2a2a2a')}
           >

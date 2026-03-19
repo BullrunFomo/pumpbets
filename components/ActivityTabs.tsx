@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { C, OPTION_COLORS } from '@/lib/theme';
+import { C } from '@/lib/theme';
 
-type Tab = 'Recent Activity' | 'Holders' | 'Comments';
+type Tab = 'Recent Activity' | 'Holders';
 
 export interface ActivityRow {
   user: string; action: string; outcome: string; isYes: boolean; amount: string; date: string;
@@ -15,21 +15,21 @@ export interface CommentRow {
   user: string; text: string; likes: number; date: string;
 }
 
-const TABS: Tab[] = ['Recent Activity', 'Holders', 'Comments'];
+const TABS: Tab[] = ['Recent Activity', 'Holders'];
 
 function outcomeColor(outcome: string) {
   return outcome === 'YES' ? C.accent : outcome === 'NO' ? C.danger : C.text;
 }
 
-
 export default function ActivityTabs({
   activity,
   holders,
-  comments,
 }: {
   activity: ActivityRow[];
   holders: HolderRow[];
-  comments: CommentRow[];
+  comments?: CommentRow[];
+  marketId?: string;
+  onCommentPosted?: () => void;
 }) {
   const [tab, setTab] = useState<Tab>('Recent Activity');
 
@@ -104,34 +104,6 @@ export default function ActivityTabs({
               <span style={{ fontSize: 13, fontWeight: 600, color: outcomeColor(row.outcome) }}>{row.outcome}</span>
               <span style={{ fontSize: 13, color: C.muted }}>{row.shares}</span>
               <span style={{ fontSize: 13, color: C.text, fontWeight: 500 }}>{row.value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {tab === 'Comments' && (
-        <div style={{ padding: '8px 0' }}>
-          {comments.length === 0 && (
-            <div style={{ padding: '40px 20px', textAlign: 'center', color: C.dimmer, fontSize: 13 }}>No comments yet</div>
-          )}
-          {comments.map((c, i) => (
-            <div
-              key={i}
-              style={{ padding: '14px 20px', borderBottom: i < comments.length - 1 ? '1px solid #111' : 'none', transition: 'background 0.15s' }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#111')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 26, height: 26, borderRadius: 7, background: OPTION_COLORS[i % 4], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-                    {c.user.slice(0, 2).toUpperCase()}
-                  </div>
-                  <span style={{ fontSize: 13, color: C.accent, fontWeight: 500 }}>{c.user}</span>
-                  <span style={{ fontSize: 11, color: C.dimmer }}>{c.date}</span>
-                </div>
-                <span style={{ fontSize: 12, color: C.dim }}>♥ {c.likes}</span>
-              </div>
-              <p style={{ margin: 0, fontSize: 13, color: C.textSoft, lineHeight: 1.5 }}>{c.text}</p>
             </div>
           ))}
         </div>

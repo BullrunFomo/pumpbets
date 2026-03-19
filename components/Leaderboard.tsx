@@ -224,6 +224,36 @@ export default function Leaderboard({ dbEntries }: { dbEntries?: LeaderboardEntr
           ))}
         </div>
       </div>
+
+      {/* Bottom-right alert */}
+      {(
+        <div style={{
+          position: 'fixed', bottom: 28, right: 28, zIndex: 100,
+          background: 'linear-gradient(135deg, #0a0a0a 0%, #0d120f 100%)',
+          border: '1px solid #01e29e',
+          borderRadius: 16, padding: '18px 20px', maxWidth: 300,
+          boxShadow: '0 0 0 1px #01e29e22, 0 0 40px rgba(1,226,158,0.15), 0 16px 48px rgba(0,0,0,0.6)',
+        }}>
+          {/* Glow bar at top */}
+          <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg, transparent, #01e29e, transparent)', borderRadius: 1 }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#01e29e', display: 'inline-block', boxShadow: '0 0 8px #01e29e, 0 0 16px #01e29e88' }} />
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#01e29e', letterSpacing: '1.5px', textTransform: 'uppercase' }}>Simulated Leaderboard</span>
+            </div>
+          </div>
+
+          <p style={{ margin: '0 0 12px', fontSize: 13, color: '#888', lineHeight: 1.65 }}>
+            The leaderboard currently displays <span style={{ color: '#e5e5e5', fontWeight: 600 }}>simulated data</span>. Real rankings go live when the project launches on mainnet.
+          </p>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#01e29e0f', border: '1px solid #01e29e25', borderRadius: 8, padding: '7px 12px' }}>
+            <img src="/sol.svg" alt="SOL" style={{ width: 13, height: 13 }} />
+            <span style={{ fontSize: 12, color: '#01e29e', fontWeight: 600 }}>Coming soon on Solana mainnet</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
