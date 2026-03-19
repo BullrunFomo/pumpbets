@@ -57,7 +57,7 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
     <div style={{
       minHeight: '100vh',
       height: isMobile ? 'auto' : '100vh',
-      overflow: isMobile ? 'auto' : 'hidden',
+      overflow: isMobile ? 'visible' : 'hidden',
       background: '#080808',
       display: 'flex',
       flexDirection: 'column',
@@ -75,12 +75,10 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
         <Stat label="Markets" value={String(markets.length)} />
         <Divider />
         <Stat label="Volume" value={`${(totalVolume / 1_000_000).toFixed(2)}M SOL`} />
-        {!isMobile && <>
-          <Divider />
-          <Stat label="Network" value="Solana Devnet" highlight />
-          <Divider />
-          <Stat label="Wallet" value={walletConnected ? '● Connected' : '○ Disconnected'} highlight={walletConnected} />
-        </>}
+        <Divider />
+        <Stat label="Network" value="Solana Devnet" highlight />
+        <Divider />
+        <Stat label="Wallet" value={walletConnected ? '● Connected' : '○ Disconnected'} highlight={walletConnected} />
       </div>
 
       {/* Category & Sort bar */}
@@ -113,17 +111,17 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
       </div>
 
       {/* Footer */}
-      <div style={{ flexShrink: 0, borderTop: '1px solid #1a1a1a', padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+      <div style={{ flexShrink: 0, borderTop: '1px solid #1a1a1a', padding: isMobile ? '16px 20px' : '10px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 6 : 10 }}>
         {([
           { label: 'Terms of service', href: '/terms' },
-          { label: 'Tokenomics',       href: '#' },
+          { label: 'Tokenomics',       href: '/tokenomics' },
           { label: 'X',                href: 'https://x.com/pumpbetsio' },
           { label: 'Docs',             href: '/docs' },
         ] as const).map(({ label, href }, i, arr) => (
           <React.Fragment key={label}>
             <a
               href={href}
-              style={{ fontSize: 12, color: '#444', textDecoration: 'none', transition: 'color 0.15s' }}
+              style={{ fontSize: 12, color: '#444', textDecoration: 'none', transition: 'color 0.15s', padding: isMobile ? '6px 4px' : '0' }}
               onMouseEnter={(e) => (e.currentTarget.style.color = '#888')}
               onMouseLeave={(e) => (e.currentTarget.style.color = '#444')}
             >
