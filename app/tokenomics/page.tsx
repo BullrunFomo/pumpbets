@@ -10,7 +10,7 @@ const sections = [
     title: '$PUMPBETS',
     body: '$PUMPBETS is the native token of the pumpbets.io ecosystem. It powers governance, rewards, and platform incentives across the Solana-based prediction market.',
     highlight: null,
-    sub: 'Contract Address: Live Soon!',
+    sub: 'Contract Address: 9qMriTViLmiKE9rbSrvkS3UGvdei3dNPhNZzV7Wrpump',
   },
   {
     tag: 'Revenue',
