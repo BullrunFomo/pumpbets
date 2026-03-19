@@ -111,7 +111,7 @@ export default function HomeClient({ markets, totalVolume: totalVolumeProp = nul
       </div>
 
       {/* Footer */}
-      <div style={{ flexShrink: 0, marginTop: isMobile ? 0 : 'auto', borderTop: '1px solid #1a1a1a', padding: isMobile ? '16px 20px' : '0 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 6 : 10 }}>
+      <div style={{ flexShrink: 0, marginTop: isMobile ? 0 : 'auto', borderTop: '1px solid #1a1a1a', padding: isMobile ? '16px 20px' : '4px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 6 : 10 }}>
         {([
           { label: 'Terms of service', href: '/terms',                    blank: false },
           { label: 'Tokenomics',       href: '/tokenomics',               blank: false },
@@ -123,7 +123,7 @@ export default function HomeClient({ markets, totalVolume: totalVolumeProp = nul
               href={href}
               target={blank ? '_blank' : '_self'}
               rel={blank ? 'noopener noreferrer' : undefined}
-              style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: isMobile ? 44 : 24, padding: '0 12px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
+              style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: isMobile ? 44 : 32, padding: '0 12px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
             >
               {label}
             </a>
