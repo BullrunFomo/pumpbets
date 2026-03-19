@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import Link from 'next/link';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import Navbar from '@/components/Navbar';
 import MarketCard from '@/components/MarketCard';
@@ -114,29 +113,20 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
       {/* Footer */}
       <div style={{ flexShrink: 0, borderTop: '1px solid #1a1a1a', padding: isMobile ? '16px 20px' : '10px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 6 : 10 }}>
         {([
-          { label: 'Terms of service', href: '/terms',                    external: false },
-          { label: 'Tokenomics',       href: '/tokenomics',               external: false },
-          { label: 'X',                href: 'https://x.com/pumpbetsio',  external: true  },
-          { label: 'Docs',             href: '/docs',                     external: false },
-        ] as const).map(({ label, href, external }, i, arr) => (
+          { label: 'Terms of service', href: '/terms',                    blank: false },
+          { label: 'Tokenomics',       href: '/tokenomics',               blank: false },
+          { label: 'X',                href: 'https://x.com/pumpbetsio',  blank: true  },
+          { label: 'Docs',             href: '/docs',                     blank: false },
+        ] as const).map(({ label, href, blank }, i, arr) => (
           <React.Fragment key={label}>
-            {external ? (
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 8px' }}
-              >
-                {label}
-              </a>
-            ) : (
-              <Link
-                href={href}
-                style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 8px' }}
-              >
-                {label}
-              </Link>
-            )}
+            <a
+              href={href}
+              target={blank ? '_blank' : '_self'}
+              rel={blank ? 'noopener noreferrer' : undefined}
+              style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 12px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
+            >
+              {label}
+            </a>
             {i < arr.length - 1 && <span style={{ color: '#2a2a2a', fontSize: 12 }}>|</span>}
           </React.Fragment>
         ))}
