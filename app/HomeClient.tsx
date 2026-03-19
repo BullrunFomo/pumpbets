@@ -74,7 +74,7 @@ export default function HomeClient({ markets, totalVolume: totalVolumeProp = nul
       <div style={{ background: '#0d0d0d', borderBottom: '1px solid #1a1a1a', padding: isMobile ? '6px 14px' : '6px 20px', flexShrink: 0, display: 'flex', gap: isMobile ? 10 : 24, alignItems: 'center' }}>
         <Stat label="Markets" value={String(markets.length)} />
         <Divider />
-        <Stat label="Volume" value={`${(totalVolume / 1_000_000).toFixed(2)}M SOL`} />
+        <Stat label="Volume" value={`${totalVolume >= 1_000_000 ? `${(totalVolume / 1_000_000).toFixed(1)}M` : totalVolume >= 1_000 ? `${(totalVolume / 1_000).toFixed(1)}k` : totalVolume.toFixed(2)} SOL`} />
         <Divider />
         <Stat label="Network" value="Solana Devnet" highlight />
         <Divider />
