@@ -87,7 +87,7 @@ export default function MarketCard({
       )}
 
       {/* Footer */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'flex-end', marginTop: 10 }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ fontSize: 11, color: C.muted, fontWeight: 500 }}>Volume: {market.totalBet}</span>
           <img src="/sol.svg" alt="SOL" style={{ width: 11, height: 11 }} />
