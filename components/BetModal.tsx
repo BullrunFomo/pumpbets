@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { Market, BinaryMarket, MultipleMarket } from '@/lib/types';
-import { buildPlaceBet, fetchMarket } from '@/lib/solana/client';
+import { useApp } from '@/context/AppContext';
 
 interface BetModalProps {
   market: Market;
@@ -14,27 +14,10 @@ interface BetModalProps {
   onConfirm: () => void;
 }
 
-/** Extract a stable u64 from the Supabase market ID string. */
-function toChainId(marketId: string): bigint {
-  const n = parseInt(marketId, 10);
-  if (!isNaN(n)) return BigInt(n);
-  const match = marketId.match(/\d+/);
-  return match ? BigInt(match[0]) : BigInt(0);
-}
-
-/** Map an option label to its 0-based index in the on-chain bets array. */
-function optionIndex(market: Market, option: string): number {
-  if (market.type === 'binary') return option.toUpperCase() === 'YES' ? 0 : 1;
-  const idx = (market as MultipleMarket).options.findIndex(
-    (o) => o.label.toLowerCase() === option.toLowerCase()
-  );
-  return Math.max(0, idx);
-}
-
 export default function BetModal({ market, option, onClose, onConfirm }: BetModalProps) {
-  const { connection } = useConnection();
-  const { publicKey, sendTransaction, connected } = useWallet();
+  const { connected } = useWallet();
   const { setVisible } = useWalletModal();
+  const { user, signIn } = useApp();
 
   const [amount, setAmount]       = useState('');
   const [loading, setLoading]     = useState(false);
@@ -57,7 +40,8 @@ export default function BetModal({ market, option, onClose, onConfirm }: BetModa
   const multiplier = optionPercent > 0 ? 100 / optionPercent : 2;
 
   const handleConfirm = async () => {
-    if (!connected || !publicKey) { setVisible(true); return; }
+    if (!connected) { setVisible(true); return; }
+    if (!user) { await signIn(); return; }
 
     const num = parseFloat(amount);
     if (!num || num <= 0) { setError('Enter a valid amount'); return; }
@@ -65,39 +49,14 @@ export default function BetModal({ market, option, onClose, onConfirm }: BetModa
     setLoading(true);
     setError('');
     try {
-      // 0. Pre-flight: verify market is initialized on-chain
-      const chainMarketId = toChainId(market.id);
-      const onChain = await fetchMarket(connection, chainMarketId);
-      if (!onChain) throw new Error('Market not yet initialized on-chain. Ask the admin to initialize it first.');
-      if (onChain.resolved) throw new Error('This market has already been resolved.');
-      if (Date.now() / 1000 > onChain.expiry) throw new Error('This market has expired.');
-
-      // 1. On-chain transaction
-      const optIdx = optionIndex(market, option);
-      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-      const tx = await buildPlaceBet(connection, publicKey, chainMarketId, optIdx, num);
-      tx.recentBlockhash = blockhash;
-
-      // Simulate first to surface a readable Anchor error
-      const sim = await connection.simulateTransaction(tx);
-      if (sim.value.err) {
-        const anchor = sim.value.logs?.find((l) => l.includes('Error Message:'));
-        const msg = anchor ? anchor.replace(/.*Error Message:\s*/, '') : (sim.value.logs?.find((l) => l.startsWith('Program log:'))?.replace('Program log: ', '') ?? 'Transaction would fail on-chain');
-        throw new Error(msg);
-      }
-
-      const sig = await sendTransaction(tx, connection);
-      await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, 'confirmed');
-
-      // 2. Record in Supabase
       const res = await fetch(`/api/markets/${market.id}/positions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ optionLabel: option.toUpperCase(), amountUsd: num, txSignature: sig }),
+        body: JSON.stringify({ optionLabel: option.toUpperCase(), amountUsd: num }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? 'Bet recorded on-chain but failed to save to DB');
+        throw new Error(body.error ?? 'Failed to place bet');
       }
 
       setSubmitted(true);
