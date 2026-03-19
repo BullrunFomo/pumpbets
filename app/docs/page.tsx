@@ -82,7 +82,7 @@ export default function DocsPage() {
             <span style={{ width: 32, height: 1, background: '#01e29e', opacity: 0.4, display: 'block' }} />
           </div>
           <h1 style={{ fontSize: 52, fontWeight: 900, margin: '0 0 12px', letterSpacing: '-2px', lineHeight: 1, color: '#f0f0f0' }}>
-            How pumpbets<span style={{ color: '#01e29e' }}>works</span>
+            How pumpbets <span style={{ color: '#01e29e' }}>works</span>
           </h1>
           <p style={{ fontSize: 14, color: '#444', margin: 0, maxWidth: 480, lineHeight: 1.7 }}>
             Everything you need to know to start trading on the platform.
@@ -98,8 +98,8 @@ export default function DocsPage() {
             style={{ borderRadius: 14, padding: '28px 32px', background: '#0c0c0c', border: '1px solid #141414' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
-              <span style={{ fontSize: 10, fontWeight: 800, color: '#01e29e', letterSpacing: '1px', background: 'rgba(1,226,158,0.08)', border: '1px solid rgba(1,226,158,0.15)', borderRadius: 6, padding: '3px 8px' }}>
-                {s.tag}
+              <span style={{ fontSize: 10, fontWeight: 800, color: '#01e29e', letterSpacing: '1px', background: 'rgba(1,226,158,0.08)', border: '1px solid rgba(1,226,158,0.15)', borderRadius: 6, padding: '3px 8px', fontVariantNumeric: 'tabular-nums' }}>
+                {String(i + 1).padStart(2, '0')}
               </span>
               <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#e0e0e0', letterSpacing: '-0.2px' }}>{s.title}</h2>
             </div>
