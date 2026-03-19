@@ -56,8 +56,9 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
 
   return (
     <div style={{
-      height: '100vh',
-      overflow: isMobile ? 'auto' : 'hidden',
+      minHeight: '100vh',
+      height: isMobile ? 'auto' : '100vh',
+      overflow: isMobile ? 'visible' : 'hidden',
       background: '#080808',
       display: 'flex',
       flexDirection: 'column',
@@ -124,14 +125,14 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ fontSize: 12, color: '#444', textDecoration: 'none', padding: isMobile ? '10px 8px' : '4px 2px' }}
+                style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 8px' }}
               >
                 {label}
               </a>
             ) : (
               <Link
                 href={href}
-                style={{ fontSize: 12, color: '#444', textDecoration: 'none', padding: isMobile ? '10px 8px' : '4px 2px' }}
+                style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 8px' }}
               >
                 {label}
               </Link>
