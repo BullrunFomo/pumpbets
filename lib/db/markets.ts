@@ -115,6 +115,12 @@ export async function createMarket(input: {
   return id;
 }
 
+export async function getTotalVolume(): Promise<number> {
+  const db = createServiceClient();
+  const { data } = await db.from('markets').select('total_volume');
+  return (data ?? []).reduce((s, r) => s + Number(r.total_volume), 0);
+}
+
 /** Recompute and persist odds after a new bet is placed, and record a price snapshot */
 export async function refreshOdds(marketId: string): Promise<void> {
   const db = createServiceClient();

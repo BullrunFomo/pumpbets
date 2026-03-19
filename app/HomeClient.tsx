@@ -10,7 +10,7 @@ import BetModal from '@/components/BetModal';
 import { Category, SortOption, Market } from '@/lib/types';
 import { useApp } from '@/context/AppContext';
 
-export default function HomeClient({ markets }: { markets: Market[] }) {
+export default function HomeClient({ markets, totalVolume: totalVolumeProp = null }: { markets: Market[]; totalVolume?: number | null }) {
   const { user } = useApp();
   const { setVisible } = useWalletModal();
 
@@ -51,7 +51,7 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
     if (market) setBetModal({ market, option });
   };
 
-  const totalVolume = markets.reduce((s, m) => s + m.volume, 0);
+  const totalVolume = totalVolumeProp ?? markets.reduce((s, m) => s + m.volume, 0);
 
   return (
     <div style={{
