@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Market, BinaryMarket, MultipleMarket } from '@/lib/types';
 import { C } from '@/lib/theme';
@@ -90,12 +89,8 @@ export default function MarketCard({
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ fontSize: 11, color: C.muted, fontWeight: 500 }}>Vol: {market.totalBet}</span>
+          <span style={{ fontSize: 11, color: C.muted, fontWeight: 500 }}>Volume: {market.totalBet}</span>
           <img src="/sol.svg" alt="SOL" style={{ width: 11, height: 11 }} />
-        </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <MessageCircle size={11} color={C.muted} />
-          <span style={{ fontSize: 11, color: C.muted, fontWeight: 500 }}>{market.comments}</span>
         </span>
       </div>
     </div>
