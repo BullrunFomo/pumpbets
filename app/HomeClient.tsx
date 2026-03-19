@@ -111,7 +111,7 @@ export default function HomeClient({ markets, totalVolume: totalVolumeProp = nul
       </div>
 
       {/* Footer */}
-      <div style={{ flexShrink: 0, borderTop: '1px solid #1a1a1a', padding: isMobile ? '16px 20px' : '10px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 6 : 10 }}>
+      <div style={{ flexShrink: 0, marginTop: isMobile ? 0 : 'auto', borderTop: '1px solid #1a1a1a', padding: isMobile ? '16px 20px' : '10px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 6 : 10 }}>
         {([
           { label: 'Terms of service', href: '/terms',                    blank: false },
           { label: 'Tokenomics',       href: '/tokenomics',               blank: false },
