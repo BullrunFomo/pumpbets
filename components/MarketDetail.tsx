@@ -50,6 +50,14 @@ export default function MarketDetail({
   const [chartKey, setChartKey] = useState(0);
   const [positions, setPositions] = useState<Position[]>(initialPositions);
   const [liveComments, setLiveComments] = useState<DbComment[]>(dbComments);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const isBinary = market.type === 'binary';
   const bMarket  = isBinary ? (market as BinaryMarket) : null;
@@ -106,9 +114,9 @@ export default function MarketDetail({
     <div style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: 'inherit' }}>
       <SimpleNavbar right={backLink} />
 
-      <div style={{ display: 'flex', gap: 28, padding: '24px 40px', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 16 : 28, padding: isMobile ? '16px 14px' : '24px 40px', alignItems: 'flex-start' }}>
         {/* Left column */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0, width: '100%' }}>
           {/* Market header */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
@@ -117,12 +125,12 @@ export default function MarketDetail({
                   ? <img src={market.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : (market.icon || market.iconText || '📈')}
               </div>
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: C.text, lineHeight: 1.3 }}>
+              <h1 style={{ margin: 0, fontSize: isMobile ? 18 : 22, fontWeight: 700, color: C.text, lineHeight: 1.3 }}>
                 {market.question}
               </h1>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: C.muted }}>Vol: <span style={{ color: C.text, fontWeight: 600 }}>{market.totalBet}</span><img src="/sol.svg" alt="SOL" style={{ width: 13, height: 13 }} /></span>
               <span style={{ color: '#333', fontSize: 12 }}>·</span>
               <span style={{ fontSize: 13, color: C.muted }}>Closes <span style={{ color: C.text }}>{new Date(market.expiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span></span>
@@ -134,10 +142,10 @@ export default function MarketDetail({
             </div>
 
             <div>
-              <div style={{ fontSize: 40, fontWeight: 800, color: C.accent, lineHeight: 1 }}>
+              <div style={{ fontSize: isMobile ? 32 : 40, fontWeight: 800, color: C.accent, lineHeight: 1 }}>
                 {isBinary
                   ? `YES ${bMarket!.yesPercent}%`
-                  : <>{mMarket!.options[0].label} <span style={{ fontSize: 32 }}>{mMarket!.options[0].percent}%</span></>}
+                  : <>{mMarket!.options[0].label} <span style={{ fontSize: isMobile ? 24 : 32 }}>{mMarket!.options[0].percent}%</span></>}
               </div>
               <div style={{ fontSize: 13, color: C.dim, marginTop: 4 }}>
                 {isBinary ? 'chance' : 'leading option'}
@@ -146,13 +154,21 @@ export default function MarketDetail({
           </div>
 
           <ChartSection market={market} refreshKey={chartKey} />
+
+          {/* Trading panel inline on mobile */}
+          {isMobile && (
+            <TradingPanel market={market} onConfirm={onBetConfirm} />
+          )}
+
           <ActivityTabs activity={activity} holders={holders} comments={comments} marketId={market.id} onCommentPosted={fetchComments} />
         </div>
 
-        {/* Right column */}
-        <div style={{ width: 320, flexShrink: 0, position: 'sticky', top: 60, alignSelf: 'flex-start' }}>
-          <TradingPanel market={market} onConfirm={onBetConfirm} />
-        </div>
+        {/* Right column — desktop only */}
+        {!isMobile && (
+          <div style={{ width: 320, flexShrink: 0, position: 'sticky', top: 60, alignSelf: 'flex-start' }}>
+            <TradingPanel market={market} onConfirm={onBetConfirm} />
+          </div>
+        )}
       </div>
 
     </div>
