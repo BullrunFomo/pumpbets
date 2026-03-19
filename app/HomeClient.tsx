@@ -56,9 +56,8 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
 
   return (
     <div style={{
-      minHeight: '100vh',
-      height: isMobile ? 'auto' : '100vh',
-      overflow: isMobile ? 'visible' : 'hidden',
+      height: '100vh',
+      overflow: isMobile ? 'auto' : 'hidden',
       background: '#080808',
       display: 'flex',
       flexDirection: 'column',
