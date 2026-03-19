@@ -37,13 +37,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     optionPercent = opt?.percent ?? 50;
   }
 
-  const position = await placeBet(
-    { marketId: id, userWallet: wallet, optionLabel, amountUsd, txSignature },
-    optionPercent
-  );
+  let position;
+  try {
+    position = await placeBet(
+      { marketId: id, userWallet: wallet, optionLabel, amountUsd, txSignature },
+      optionPercent
+    );
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'DB error';
+    console.error('[positions/POST] placeBet failed:', msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 
-  // Recompute market odds asynchronously
-  await refreshOdds(id);
+  // Recompute market odds — non-fatal
+  try { await refreshOdds(id); } catch (e) { console.warn('[positions/POST] refreshOdds failed:', e); }
 
   return NextResponse.json(position, { status: 201 });
 }
