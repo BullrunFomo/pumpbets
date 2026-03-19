@@ -123,7 +123,9 @@ export default function HomeClient({ markets, totalVolume: totalVolumeProp = nul
               href={href}
               target={blank ? '_blank' : '_self'}
               rel={blank ? 'noopener noreferrer' : undefined}
-              style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: isMobile ? 44 : 32, padding: '0 12px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
+              style={{ fontSize: 12, color: '#444', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: isMobile ? 44 : 32, padding: '0 12px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', transition: 'color 0.15s' } as React.CSSProperties}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#01e29e')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#444')}
             >
               {label}
             </a>
