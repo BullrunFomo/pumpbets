@@ -116,8 +116,6 @@ export default function HomeClient({ markets }: { markets: Market[] }) {
           option={betModal.option}
           onClose={() => setBetModal(null)}
           onConfirm={() => setBetModal(null)}
-          walletConnected={walletConnected}
-          onConnectWallet={() => setVisible(true)}
         />
       )}
     </div>
